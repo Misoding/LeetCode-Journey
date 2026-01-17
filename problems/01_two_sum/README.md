@@ -27,10 +27,15 @@ The most straightforward way to solve this problem is to check every possible pa
 We iterate through all unique pairs $(i, j)$ with $0 \le i < j \le n-1$.
 To determine the exact time complexity, we calculate the number of operations based on the nested loops:
 
-$$ T(n) = \sum_{i=0}^{n-2} \sum_{j=i+1}^{n-1} 1 $$
+$$
+T(n) = \sum_{i=0}^{n-2} \sum_{j=i+1}^{n-1} 1
+$$
 
 Expanding this sum, we get an arithmetic progression:
-$$ T(n) = (n-1) + (n-2) + \dots + 1 = \frac{n(n-1)}{2} $$
+
+$$
+T(n) = (n-1) + (n-2) + \dots + 1 = \frac{n(n-1)}{2}
+$$
 
 Since the dominant term is $n^2$, the time complexity is **quadratic**.
 
@@ -63,7 +68,10 @@ public:
 
 To reduce the time complexity strictly below $O(n^2)$, we need to trade space for time. We can utilize a **Hash Map** to store the indices of the elements we have processed or need to look up.
 The mathematical condition $a_i + a_j = T$ can be rewritten as finding a complement $c_i$ such that:
-$$ c_i = T - a_i $$
+
+$$
+c_i = T - a_i
+$$
 
 The algorithm proceeds in two phases:
 1.  **Mapping Phase:** Store each number and its index in a Hash Table.
@@ -75,7 +83,10 @@ Let $n$ be the number of elements.
 2.  **Search Phase:** Iterates $n$ times. Lookup is $O(1)$. $\rightarrow T_2(n) \approx n$.
 
 Total Time Complexity:
-$$ T(n) = T_1(n) + T_2(n) \in \Theta(n) $$
+
+$$
+T(n) = T_1(n) + T_2(n) \in \Theta(n)
+$$
 
 - **Time Complexity:** $O(n)$
 - **Space Complexity:** $O(n)$ (auxiliary space for the map).

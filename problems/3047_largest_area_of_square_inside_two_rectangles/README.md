@@ -1,4 +1,4 @@
-# Day 3: Find the Largest Area of Square Inside Two Rectangles
+# Day 2: Find the Largest Area of Square Inside Two Rectangles
 
 - **Difficulty:** Medium
 - **Topics:** Geometry, Array, Math

@@ -1,4 +1,4 @@
-# Day 4: Largest Magic Square in Grid via 2D Prefix Sums
+# Day 3: Largest Magic Square in Grid via 2D Prefix Sums
 
 - **Difficulty:** Medium
 - **Topics:** Matrix, Prefix Sum, Dynamic Programming, Greedy
@@ -24,59 +24,71 @@ The objective is to find the **largest possible value of $k$** (the side length)
 To solve this problem efficiently, we employ the **Prefix Sum** technique extended to multiple dimensions. This reduces the cost of range sum queries from linear time to constant time.
 
 ### 1. Mathematical Abstraction & Preprocessing
+
 Let $G$ be the input matrix of size $m \times n$. We define four auxiliary matrices to store cumulative sums, allowing for $O(1)$ retrieval of subarray sums.
 
 **A. Row Prefix Sum ($P_{row}$):**
+
 $$
 P_{row}[i][j] = \sum_{c=0}^{j} G[i][c]
 $$
 
 Recurrence relation:
+
 $$
 P_{row}[i][j] = \begin{cases} G[i][0] & \text{if } j=0 \\ P_{row}[i][j-1] + G[i][j] & \text{if } j > 0 \end{cases}
 $$
 
-**Query:** The sum of a row segment in row $i$ from column $c_1$ to $c_2$ is:
+Query: The sum of a row segment in row $i$ from column $c_1$ to $c_2$ is:
+
 $$
 \text{Sum} = P_{row}[i][c_2] - P_{row}[i][c_1-1]
 $$
 
 **B. Column Prefix Sum ($P_{col}$):**
+
 $$
 P_{col}[i][j] = \sum_{r=0}^{i} G[r][j]
 $$
 
 Recurrence relation:
+
 $$
 P_{col}[i][j] = P_{col}[i-1][j] + G[i][j]
 $$
 
 **C. Principal Diagonal Prefix Sum ($P_{diag}$):**
+
 $$
 P_{diag}[i][j] = \sum_{k=0}^{\min(i,j)} G[i-k][j-k]
 $$
 
 Recurrence relation:
+
 $$
 P_{diag}[i][j] = P_{diag}[i-1][j-1] + G[i][j]
 $$
 
 **D. Secondary Diagonal Prefix Sum ($P_{anti}$):**
+
 $$
 P_{anti}[i][j] = \sum_{k=0}^{\min(i, n-1-j)} G[i-k][j+k]
 $$
 
 Recurrence relation:
+
 $$
 P_{anti}[i][j] = P_{anti}[i-1][j+1] + G[i][j]
 $$
 
 ### 2. Search Strategy
+
 We adopt a **Greedy** approach regarding the size $k$. We iterate $k$ from the maximum possible dimension ($\min(m, n)$) down to 1. The first $k$ for which we find a valid magic square is guaranteed to be the maximum.
 
 For a fixed size $k$, we iterate through all possible top-left corners $(i, j)$ where $0 \le i \le m-k$ and $0 \le j \le n-k$.
 
 ### 3. Validity Verification
+
 For a candidate subgrid of size $k$ at $(i, j)$, let the target sum $S$ be the sum of the first row. We then verify:
 
 1.  **Rows:** $\forall r \in [0, k-1]$, $\text{Sum}(Row_{i+r}) = S$. (Cost: $k$ comparisons)
@@ -89,20 +101,25 @@ For a candidate subgrid of size $k$ at $(i, j)$, let the target sum $S$ be the s
 ### 4. Complexity Calculation
 
 **Time Complexity Analysis:**
+
 Let $K = \min(m, n)$.
 1.  **Preprocessing:** $\Theta(m \cdot n)$
-2.  **Search Phase:**
-    The nested loops iterate roughly $m \cdot n$ times for each size $k$. The verification takes $O(k)$.
-    $$
-    T_{search} \approx \sum_{k=1}^{K} (m-k)(n-k) \cdot 2k
-    $$
-    Approximating via integration, the worst-case time complexity is:
-    $$
-    T(m, n) \in O(m \cdot n \cdot \min(m, n)^2)
-    $$
+2.  **Search Phase:** The nested loops iterate roughly $m \cdot n$ times for each size $k$. The verification takes $O(k)$.
+
+$$
+T_{search} \approx \sum_{k=1}^{K} (m-k)(n-k) \cdot 2k
+$$
+
+Approximating via integration, the worst-case time complexity is:
+
+$$
+T(m, n) \in O(m \cdot n \cdot \min(m, n)^2)
+$$
 
 **Space Complexity Analysis:**
+
 We use 4 auxiliary matrices of size $m \times n$.
+
 $$
 S(m, n) \in \Theta(m \cdot n)
 $$

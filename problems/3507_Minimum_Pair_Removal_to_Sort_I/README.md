@@ -277,6 +277,5 @@ public:
 
 ---
 
-### 🔗 Connect
 ### 📂 Repository
 This problem is part of my daily algorithmic practice. You can find the full collection of solutions and formal documentation in my [**GitHub Repository**](../../README.md).

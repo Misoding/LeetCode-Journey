@@ -2,7 +2,7 @@
 
 - **Difficulty:** Medium
 - **Topics:** Graph, Shortest Path, Dijkstra, Heap (Priority Queue)
-- **LeetCode Link:** [Shortest Path in Weighted Graph](https://leetcode.com/tag/shortest-path/)
+- **LeetCode Link:** [Shortest Path in Weighted Graph](https://leetcode.com/problems/minimum-cost-path-with-edge-reversals/)
 - **Author:** [Mihail Iazinschi](https://www.linkedin.com/in/mihail-iazinschi/)
 
 ---

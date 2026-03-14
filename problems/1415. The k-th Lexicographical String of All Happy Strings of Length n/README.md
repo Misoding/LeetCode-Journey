@@ -1,79 +1,79 @@
-# Day 50: Minimum Number of Seconds to Make Mountain Height Zero
+# Day 51: The k-th Lexicographical String of All Happy Strings of Length n
 
 - **Difficulty:** Medium
-- **Topics:** Array, Math, Binary Search, Priority Queue (Heap), Greedy
-- **LeetCode Link:** [Minimum Number of Seconds to Make Mountain Height Zero](https://leetcode.com/problems/minimum-number-of-seconds-to-make-mountain-height-zero/)
+- **Topics:** String, Backtracking
+- **LeetCode Link:** [The k-th Lexicographical String of All Happy Strings of Length n](https://leetcode.com/problems/the-k-th-lexicographical-string-of-all-happy-strings-of-length-n/)
 - **Author:** [Mihail Iazinschi](https://www.linkedin.com/in/mihail-iazinschi/)
 
 ---
 
 ## 📝 Problem Statement
 
-You are given an integer `mountainHeight` denoting the height of a mountain. You are also given an integer array `workerTimes` representing the base time for different workers to reduce the mountain's height.
+A **happy string** is a string that:
+* Consists only of letters of the set `['a', 'b', 'c']`.
+* $s[i] \neq s[i + 1]$ for all values of $i$ from 1 to $s.length - 1$ (1-indexed).
 
-If worker $i$ reduces the mountain's height by $x$, it takes them `workerTimes[i] * x` seconds to reduce the $x$-th unit of height. The workers work in parallel.
+Given two integers `n` and `k`, consider a list of all happy strings of length `n` sorted in lexicographical order.
+Return the $k^{th}$ string of this list or return an empty string if there are less than `k` happy strings of length `n`.
 
-Return the **minimum** number of seconds required to reduce the `mountainHeight` to 0.
+**Example:**
+Input: `n = 3, k = 9`
+Output: `"cab"`
+Explanation: There are 12 different happy strings of length 3. The 9th string is `"cab"`.
 
 ---
 
 ## 🏗️ Deep-Dive Implementation Strategy
 
-The problem models parallel execution where the marginal cost of a task increases linearly for each specific worker. We must assign exactly `mountainHeight` units of work across all workers such that the absolute maximum cumulative time spent by any single worker is minimized.
+The problem requires exploring a constrained combinatorial space. A Depth-First Search (DFS) backtracking algorithm perfectly models this requirement.
 
-### 1. The Min-Heap (Greedy Scheduler)
-We define a custom data structure `hardworker` that holds three states for each worker:
-1.  `workerTime`: The base multiplier (constant).
-2.  `idx`: The next unit of mountain this worker will tackle (starts at 1).
-3.  `actionCost`: The **absolute predicted timestamp** when this worker would finish their `idx`-th unit of work.
+### 1. State Space Tree Generation
+The algorithm constructs a virtual decision tree of depth $N$:
+1.  **Root Node (Depth 0):** Has 3 branching choices (`'a'`, `'b'`, `'c'`).
+2.  **Child Nodes (Depth > 0):** Each node has exactly 2 branching choices, as the character must differ from its immediate parent (the preceding character in the string).
+3.  **Lexicographical Ordering:** By strictly iterating the choices in ASCII ascending order (`'a'` $\to$ `'c'`), the DFS naturally traverses the tree in lexicographical order. The leaves of this tree represent the complete happy strings.
 
-We maintain a Priority Queue (Min-Heap) ordered by `actionCost` in ascending order. The heap always surfaces the worker who can complete their next assigned unit of mountain at the earliest possible absolute time.
-
-### 2. Arithmetic Progression Cumulative Cost
-If a worker with base time $T$ reduces the mountain by $k$ units sequentially, the time taken for the $k$-th unit is $T \cdot k$.
-The *total cumulative time* to process $k$ units is the sum of an arithmetic progression:
-$T \cdot 1 + T \cdot 2 + \dots + T \cdot k = T \cdot \frac{k(k+1)}{2}$.
-
-When a worker is popped from the heap, they are definitively assigned that unit of work. We update the global `maxTime` to accommodate this completion timestamp, increment their `idx`, calculate their *next* predicted completion timestamp using the arithmetic progression formula, and push them back into the heap.
+### 2. Backtracking Pruning
+The condition `if (pos > 0 && i == pair[pos-1]) continue;` acts as the pruning mechanism. It prevents the DFS from ever entering an invalid state, ensuring that $100\%$ of the strings reaching the base case `pos >= n` are valid happy strings. 
 
 ---
 
 ## 🔬 Formal Algorithmic Analysis
 
-### 1. Mathematical Model
+### 1. Mathematical Model (Combinatorics)
 
-Let $W$ be the set of workers. Let $x_i$ be the number of units assigned to worker $i \in W$. We must satisfy the constraint:
-
-$$
-\sum_{i \in W} x_i = H \quad \text{(where } H \text{ is the mountain height)}
-$$
-
-We want to minimize the objective function (makespan):
+Let $S_n$ be the set of all happy strings of length $n$.
+The cardinality of this set is derived from the branching factor. The first character has 3 possibilities. Every subsequent character has 2 possibilities (excluding the immediate predecessor).
 
 $$
-\text{Total Time} = \max_{i \in W} \left( T_i \cdot \frac{x_i (x_i + 1)}{2} \right)
+|S_n| = 3 \cdot 2^{n-1}
 $$
 
-The Greedy algorithm strictly minimizes this max-bound at every step by simulating the allocations dynamically over the absolute timeline.
+If $k > 3 \cdot 2^{n-1}$, the requested string falls outside the valid combinatorial space, returning $\emptyset$.
 
 ### 2. Time Complexity Analysis
 
-Let $H$ be `mountainHeight` and $W$ be the size of `workerTimes`.
-1.  **Heap Initialization:** Inserting all $W$ workers into the priority queue takes $O(W \log W)$.
-2.  **Greedy Allocation:** The `while` loop runs exactly $H$ times. In each iteration, we pop from and push to the heap. A heap operation takes $O(\log W)$.
+The DFS explores exactly the number of valid paths. For each leaf node reached, a string of length $N$ is deep-copied into the `pairs` vector.
+The total number of states visited is bounded by the cardinality of $S_n$.
 
 $$
-T(H, W) = \Theta(W \log W) + \Theta(H \log W) = \Theta((H + W) \log W)
+T(N) = \Theta(|S_n| \cdot N) = \Theta(N \cdot 3 \cdot 2^{n-1})
 $$
 
-*(Note: For extremely large $H$, a Binary Search on the answer space yields $O(W \log(\text{MaxTime}))$, but the Min-Heap approach perfectly simulates the greedy logic and easily passes within standard limits if $H$ is bounded reasonably).*
+Given $N \le 10$, the maximum operations approximate $10 \cdot 3 \cdot 512 = 15,360$, executing in a fraction of a millisecond.
+
+$$
+T(N) \in O(N \cdot 2^N)
+$$
 
 ### 3. Space Complexity Analysis
 
-The Priority Queue stores exactly one `hardworker` state per element in `workerTimes`.
+The auxiliary space is consumed by:
+1.  **The Call Stack:** Maximum recursion depth is exactly $N$.
+2.  **The String Storage:** The `pairs` vector holds all valid strings. Total storage requires $N$ bytes per string for $3 \cdot 2^{n-1}$ strings.
 
 $$
-S(W) = \Theta(W)
+S(N) = \Theta(N) + \Theta(N \cdot 3 \cdot 2^{n-1}) = \Theta(N \cdot 2^N)
 $$
 
 ---
@@ -111,6 +111,7 @@ public:
 ```
 
 ---
+
 
 ### 🔗 Connect
 This problem is part of my daily algorithmic practice. You can find the full collection of solutions and formal documentation in my [**GitHub Repository**](../../README.md).
